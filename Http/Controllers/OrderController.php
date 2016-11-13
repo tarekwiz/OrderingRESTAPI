@@ -30,7 +30,7 @@ class OrderController extends Controller
 		$order = Order::find($id); // FIND THE ORDER
 		if($order) // CHECK IF ORDER IS FOUND
 		{
-			if(!$order->status == 2) // CHECK IF ORDER IS NOT ALREADY CANCELED
+			if($order->status == 1) // CHECK IF ORDER IS NOT ALREADY CANCELED
 			{
 				$order->status = 2; //SET STATUS = 2 (CANCELED)
 				$order->save(); //SAVE THE ORDER TO DATABASE
