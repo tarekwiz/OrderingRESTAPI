@@ -15,10 +15,3 @@
 Route::get('/getorder/orderId/{id}', 'OrderController@getOrder')->name('getOrder');
 Route::get('/cancelorder/orderId/{id}', 'OrderController@cancelOrder')->name('cancelOrder');
 
-
-
-Route::get('/', function () {
-    return view('welcome');
-});
-Auth::routes();
-Route::get('/home', 'HomeController@index');
