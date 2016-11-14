@@ -32,35 +32,12 @@ use \Psr\Http\Message\ResponseInterface as Response;
 	
 	
 	$app->get('/getorder/orderId/{id}', function (Request $request, Response $response) {
-		/*
-		Testing
-		*/
-		$order = new ParseObject("Order");
-
-		$order->set("total", 1337);
-		$order->set("status", 1);
-
-		$user = new ParseObject("Order");
-
-		$user->set("username", 'tarek');
-		$user->set("email", 'email@email.com');
-		$user->set("firstname", 'tarek');
-		$user->set("lastname", 'adel');
-		$user->set("phone", '+123456');
-		$user->save();
-		$order->set('user', $user);
-		$order->save();
-		//echo 'New order created with objectId: ' . $order->getObjectId();
-		//echo 'New user created with objectId: ' . $user->getObjectId();
-	
-		/*Testing END*/
 		
-		
-	    $id = $request->getAttribute('id');	
+	    	$id = $request->getAttribute('id');	
 		$query = new ParseQuery("Order");
 
 		try {
-			  $order = $query->get($order->getObjectId()); // should be $id instead of $order->getObjectID but im using it for testing
+			  $order = $query->get($id);
 			  $user  = $order->get("user");
 			  $user->fetch();
 			  $order = json_decode($order->_encode());
@@ -79,40 +56,25 @@ use \Psr\Http\Message\ResponseInterface as Response;
 
 	$app->get('/cancelorder/orderId/{id}', function (Request $request, Response $response) {
 		
-		/*
-			Testing
-		*/
-		$order = new ParseObject("Order");
-
-		$order->set("total", 1337);
-		$order->set("status", 1);
-
-		$user = new ParseObject("Order");
-
-		$user->set("username", 'tarek');
-		$user->set("email", 'email@email.com');
-		$user->set("firstname", 'tarek');
-		$user->set("lastname", 'adel');
-		$user->set("phone", '+123456');
-		$user->save();
-		$order->set('user', $user);
-		$order->save();
-		//echo 'New order created with objectId: ' . $order->getObjectId();
-		//echo 'New user created with objectId: ' . $user->getObjectId();
-	
-		/*
-			Testing END
-		*/
-		
-	    $id = $request->getAttribute('id');
+	    	$id = $request->getAttribute('id');
 		$query = new ParseQuery("Order");
 
 		try {
-			  $order = $query->get($order->getObjectId()); // should be $id instead of $order->getObjectID but im using it for testing
+			  $order = $query->get($id); 
+			  
+			  if($order->get('status') == 2)
+			  {
+				$result = array('objectId' => $order->getObjectId(), 'status' => 'Already Canceled');
+				$response = $response->withJson($result);
+				return $response;
+			  }
+			
 			  $order->set('status', 2);
 			  $order->save();
+			
 			  $order = json_decode($order->_encode()); // THIS LINE IS BECAUSE SLIM CAN'T ACCEPT ENCODED JSON, NEEDS TO BE PHP ARRAY OR OBJECT.
 			  $response = $response->withJson($order);
+			
 	  		}
 		catch (ParseException $ex) {
 			if($ex->getCode() == 101) //OBJECT NOT FOUND ERROR CODE = 101
